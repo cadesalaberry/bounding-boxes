@@ -1,23 +1,30 @@
-import logo from './logo.svg';
+import logo from './fruits.jpg';
 import './App.css';
 
+import React, { useState, useEffect } from 'react';
+
+import { Button } from '@material-ui/core';
+import { fabric } from "fabric";
+
 function App() {
+  const [canvas, setCanvas] = useState('');
+
+  useEffect(() => {
+    setCanvas(initCanvas());
+  }, []);
+  
+  const initCanvas = () => (
+    new fabric.Canvas('canvas', {
+      height: 800,
+      width: 800,
+      backgroundColor: 'pink'
+    })
+  )
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <img src={logo} className="s-image" alt="logo" />
+      <canvas id="canvas" />
     </div>
   );
 }
