@@ -10,8 +10,30 @@
   color: white;
 }
 
+.MuiPaper-root.header {
+  height: 5vh;
+  background-color: transparent;
+  color: white;
+  display: flex;
+  align-items: center;
+}
+
+div.MuiMobileStepper-root {
+  background-color: transparent;
+  color: white;
+}
+
+.stepper {
+  height: 5vh;
+  background-color: transparent;
+}
+
 .s-image {
   max-width: 100%;
-  max-height: 100vh;
+  max-height: 85vh;
   object-fit: contain;
+}
+
+.canvas {
+  position: absolute !important;
 }
