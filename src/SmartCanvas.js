@@ -1,8 +1,13 @@
 import { fabric } from "fabric";
-// eslint-disable-next-line no-unused-vars
-import { Canvas, Point } from "fabric";
 
-export function getSmartCanvas(elementId, params) {
+/**
+ * Spawns a fabric canvas tha allows drawing rectangular selections.
+ *
+ * @param {string} elementId
+ * @param {*} params
+ * @returns
+ */
+export const getSmartCanvas = (elementId, params) => {
 
   let isDown = false, origX, origY, rectangle;
 
@@ -10,14 +15,13 @@ export function getSmartCanvas(elementId, params) {
     height: params.height,
     width: params.width,
     containerClass: 'canvas',
-    // backgroundColor: 'pink'
   })
 
   canvas.on('mouse:down', function(o){
     var pointer = canvas.getPointer(o.e);
 
-    if (o.target) return;
-    console.log(o)
+    if (o.target && o.target.selectable) return;
+
     isDown = true;
     origX = pointer.x;
     origY = pointer.y;
@@ -61,20 +65,34 @@ export const getNormalizedCoordinates = (item) => {
 
 }
 
+/**
+ * Computes the biggest rectangle for the selection to fit in.
+ *
+ * @param {fabric.Point[]} coordinates
+ * @returns
+ */
 export const getPreviewWindowFromCoordinates = (coordinates) => {
-  const left = Math.min(...coordinates.map(o => o.x))
-  const right = Math.max(...coordinates.map(o => o.x))
-  const top = Math.min(...coordinates.map(o => o.y))
-  const bottom = Math.max(...coordinates.map(o => o.y))
+  const ys = coordinates.map(o => o.y)
+  const xs = coordinates.map(o => o.x)
+  const left = Math.min(...xs)
+  const right = Math.max(...xs)
+  const top = Math.min(...ys)
+  const bottom = Math.max(...ys)
   
   return {
     left,
     top,
     width: right - left,
-    height: top - bottom,
+    height: bottom - top,
   }
 }
 
+/**
+ * Converts an image to a displayable format.
+ * 
+ * @param {fabric.imageData} imageData
+ * @returns
+ */
 export const getDataUrlFromImageData = (imageData) => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -82,26 +100,29 @@ export const getDataUrlFromImageData = (imageData) => {
   canvas.height = imageData.height;
   ctx.putImageData(imageData, 0, 0);
 
-  const image = new Image();
   return canvas.toDataURL();
 }
 
 /**
+ * Extract images from rectangle selection.
  * 
- * @param {fabric.Canvas} canvas 
- * @param {*} canvasSize 
- * @returns 
+ * @param {fabric.Canvas} canvas
+ * @param {*} canvasSize
+ * @returns
  */
 export const getRectanglesFromCanvas = (canvas, { width, height }) => {
   const objects = canvas.getObjects();
 
-  return objects.map((obj)=> {
+  return objects
+    .filter(obj => obj.selectable) // Only get user made rectangles
+    .map((obj)=> {
     const coordinates = Object.values(obj.aCoords);
     const previewWindow = getPreviewWindowFromCoordinates(coordinates);
     const { left, top, height, width } = previewWindow;
-    const imageData = canvas.upperCanvasEl.getContext('2d').getImageData(left, top, width, height);
+    const imageData = canvas.getContext('2d').getImageData(left, top, width, height);
     const dataUrl = getDataUrlFromImageData(imageData);
     
+    // TODO: Adjust the preview window, they do not display the original selection
     console.log(coordinates, previewWindow)
     
     return {
