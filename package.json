@@ -1,6 +1,7 @@
 {
   "name": "bounding-boxes",
   "version": "0.1.0",
+  "homepage": "https://cadesalaberry.github.io/bounding-boxes/",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.3",
